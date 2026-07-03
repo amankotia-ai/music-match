@@ -217,8 +217,10 @@ const player = {
 
     // full-track playback through the user's Spotify device
     if (autoplay && spotOK() && track.spotifyId) {
+      this.mode = 'pending';                   // don't show preview timings while syncing
       const played = await this.playViaSpotify(track);
       if (played || track !== this.track) return;
+      this.mode = 'preview';
     }
 
     // 30-second preview fallback
@@ -287,6 +289,7 @@ function playPressed() {
     player.toggle();                                     // synced: real play/pause
     return;
   }
+  if (player.mode === 'pending') return;                 // sync already in flight
   if (!spotOK()) {
     push(connectSpotifyView());                          // guide: connect first
     return;
@@ -356,30 +359,32 @@ player.audio.addEventListener('ended', () => { if (player.mode !== 'spotify') pl
 /* poll the Spotify player while in remote mode: real progress, play state,
    and auto-advance detection (Spotify moves through the queue on its own) */
 let npPoll = null;
+async function pollSpotifyOnce() {
+  if (player.mode !== 'spotify') { clearInterval(npPoll); return; }
+  if (document.hidden) return;
+  let s;
+  try { s = await Spot.state(); } catch (e) { return; }
+  if (!s || !s.item) return;
+  if (player.playing !== s.is_playing) {
+    player.playing = s.is_playing;
+    updateStatusIcon();
+  }
+  if (player.track && player.track.spotifyId !== s.item.id) {
+    const i = player.queue.findIndex((t) => t.spotifyId === s.item.id);
+    if (i >= 0) { player.index = i; renderIfNowPlaying(); }
+  }
+  const fill = $('#npBarFill');
+  if (fill && s.item.duration_ms) {
+    fill.style.width = `${(s.progress_ms / s.item.duration_ms) * 100}%`;
+    const el = $('#npElapsed'), rm = $('#npRemain');
+    if (el) el.textContent = fmtTime(s.progress_ms / 1000);
+    if (rm) rm.textContent = `-${fmtTime((s.item.duration_ms - s.progress_ms) / 1000)}`;
+  }
+}
 function startNpPoll() {
   clearInterval(npPoll);
-  npPoll = setInterval(async () => {
-    if (player.mode !== 'spotify') { clearInterval(npPoll); return; }
-    if (document.hidden) return;
-    let s;
-    try { s = await Spot.state(); } catch (e) { return; }
-    if (!s || !s.item) return;
-    if (player.playing !== s.is_playing) {
-      player.playing = s.is_playing;
-      updateStatusIcon();
-    }
-    if (player.track && player.track.spotifyId !== s.item.id) {
-      const i = player.queue.findIndex((t) => t.spotifyId === s.item.id);
-      if (i >= 0) { player.index = i; renderIfNowPlaying(); }
-    }
-    const fill = $('#npBarFill');
-    if (fill && s.item.duration_ms) {
-      fill.style.width = `${(s.progress_ms / s.item.duration_ms) * 100}%`;
-      const el = $('#npElapsed'), rm = $('#npRemain');
-      if (el) el.textContent = fmtTime(s.progress_ms / 1000);
-      if (rm) rm.textContent = `-${fmtTime((s.item.duration_ms - s.progress_ms) / 1000)}`;
-    }
-  }, 1000);
+  pollSpotifyOnce();                 // immediate: real duration shows right away
+  npPoll = setInterval(pollSpotifyOnce, 1000);
 }
 
 /* ---------------------------------------------------------------- views */
@@ -592,14 +597,16 @@ function renderNowPlaying(el) {
           <div class="np-album">${t.album}</div>
           ${player.mode === 'spotify'
             ? '<span class="np-state"><i class="np-dot on"></i>Spotify</span>'
-            : player.deviceHint
-              ? '<span class="np-state"><i class="np-dot wait"></i>waiting for Spotify&hellip;</span>'
-              : `<span class="np-state"><i class="np-dot"></i>preview &middot; &#9654;&#10073;&#10073; ${spotOK() ? 'full track' : 'connect Spotify'}</span>`}
+            : player.mode === 'pending'
+              ? '<span class="np-state"><i class="np-dot wait"></i>syncing&hellip;</span>'
+              : player.deviceHint
+                ? '<span class="np-state"><i class="np-dot wait"></i>waiting for Spotify&hellip;</span>'
+                : `<span class="np-state"><i class="np-dot"></i>preview &middot; &#9654;&#10073;&#10073; ${spotOK() ? 'full track' : 'connect Spotify'}</span>`}
         </div>
       </div>
       <div class="np-progress">
         <div class="np-bar"><div class="np-bar-fill" id="npBarFill"></div></div>
-        <div class="np-times"><span id="npElapsed">0:00</span><span id="npRemain">-0:30</span></div>
+        <div class="np-times"><span id="npElapsed">0:00</span><span id="npRemain">${player.mode === 'preview' && t.previewUrl ? '-0:30' : ''}</span></div>
       </div>
     </div>`;
 }
