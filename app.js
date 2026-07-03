@@ -416,10 +416,64 @@ function startNpPoll() {
   npPoll = setInterval(pollSpotifyOnce, 1000);
 }
 
-/* coming back to the app? re-sync the UI with Spotify right away */
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden && player.mode === 'spotify') pollSpotifyOnce();
-});
+/* ---- returning to the app: adopt whatever Spotify is doing -------------
+   Runs on reopen/focus/boot. If Spotify advanced through the queue, was
+   paused, or is playing something started elsewhere, the iPod mirrors it. */
+let lastSyncAt = 0;
+async function syncFromSpotify() {
+  if (!spotOK() || player.mode === 'pending') return;
+  const now = Date.now();
+  if (now - lastSyncAt < 1500) return;           // focus+visibility fire together
+  lastSyncAt = now;
+
+  let s;
+  try { s = await Spot.state(); } catch (e) { return; }
+  if (!s || !s.item) {
+    if (player.mode === 'spotify' && player.playing) {
+      player.playing = false;
+      updateStatusIcon();
+    }
+    return;
+  }
+
+  const id = s.item.id;
+  if (player.mode === 'spotify' && player.track && player.track.spotifyId === id) {
+    player.playing = s.is_playing;               // same song — refresh state only
+    player.progressMs = s.progress_ms || 0;
+    updateStatusIcon();
+    renderIfNowPlaying();
+    return;
+  }
+
+  // adopt: find the song in the current queue or the library…
+  let queue = player.queue.some((t) => t.spotifyId === id) ? player.queue : LIBRARY;
+  let index = queue.findIndex((t) => t.spotifyId === id);
+  if (index < 0) {                               // …or mirror an outside track
+    const img = s.item.album && s.item.album.images && s.item.album.images[0];
+    queue = [{
+      title: s.item.name,
+      artist: (s.item.artists || []).map((a) => a.name).join(', '),
+      album: (s.item.album && s.item.album.name) || '',
+      spotifyId: id,
+      art: img ? img.url : null,
+    }];
+    index = 0;
+  }
+  player.audio.pause();
+  player.queue = queue;
+  player.index = index;
+  player.mode = 'spotify';
+  player.deviceHint = false;
+  player.playing = s.is_playing;
+  player.progressMs = s.progress_ms || 0;
+  updateStatusIcon();
+  startNpPoll();
+  renderIfNowPlaying();
+}
+
+document.addEventListener('visibilitychange', () => { if (!document.hidden) syncFromSpotify(); });
+window.addEventListener('focus', () => syncFromSpotify());
+window.addEventListener('pageshow', () => syncFromSpotify());
 
 /* ---------------------------------------------------------------- views */
 
@@ -1092,6 +1146,9 @@ resetIdle();
 
 push(mainMenuView());
 push(coverFlowView());   // Cover Flow is the home screen; MENU backs into the menu
+
+/* on boot, adopt any playback already in flight */
+syncFromSpotify();
 
 /* returning from the Spotify consent page? finish the token exchange */
 if (typeof Spot !== 'undefined') {
