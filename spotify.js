@@ -8,7 +8,11 @@
 
 const Spot = (() => {
   const CLIENT_ID = 'd1b342836ebd4ebb86a706e0af60f2b8';
-  const REDIRECT_URI = location.origin + '/';
+  /* pinned, not derived from location: Vercel serves the same app from
+     several alias domains, and the URI must byte-match the dashboard */
+  const REDIRECT_URI = location.hostname === '127.0.0.1'
+    ? 'http://127.0.0.1:4173/'
+    : 'https://music-match-gold.vercel.app/';
   const SCOPES = 'user-read-playback-state user-modify-playback-state';
   const LS = { at: 'sp_access', rt: 'sp_refresh', exp: 'sp_expires', ver: 'sp_verifier' };
 
