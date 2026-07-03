@@ -205,8 +205,9 @@ const player = {
   queue: [],
   index: -1,
   playing: false,
-  mode: 'preview',            // 'preview' (30s clip) | 'spotify' (full track on device)
+  mode: 'preview',            // 'preview' (30s clip) | 'pending' | 'spotify' (full track)
   deviceHint: false,          // connected but no active Spotify device found
+  progressMs: 0,              // last known Spotify position, for seamless recovery
 
   get track() { return this.queue[this.index] || null; },
 
@@ -217,6 +218,7 @@ const player = {
     this.playing = false;
     this.mode = 'preview';
     this.deviceHint = false;
+    this.progressMs = 0;
     updateStatusIcon();
     const track = this.track;
     if (!track) return;
@@ -243,11 +245,11 @@ const player = {
     renderIfNowPlaying();
   },
 
-  async playViaSpotify(track) {
+  async playViaSpotify(track, positionMs = 0) {
     const withIds = this.queue.filter((t) => t.spotifyId);
     const uris = withIds.map((t) => 'spotify:track:' + t.spotifyId);
     try {
-      await Spot.playTracks(uris, withIds.indexOf(track));
+      await Spot.playTracks(uris, withIds.indexOf(track), positionMs);
       if (track !== this.track) return true;
       this.audio.pause();                      // preview stops the moment sync starts
       this.mode = 'spotify';
@@ -268,9 +270,24 @@ const player = {
 
   toggle() {
     if (this.mode === 'spotify') {
-      (this.playing ? Spot.pause() : Spot.resume()).catch(() => {});
-      this.playing = !this.playing;
+      if (this.playing) {
+        this.playing = false;
+        updateStatusIcon();
+        Spot.pause().catch(() => {});
+        return;
+      }
+      // resume, with a recovery ladder for suspended devices / lost context
+      this.playing = true;
       updateStatusIcon();
+      const track = this.track;
+      Spot.resume().catch(async () => {
+        const ok = await this.playViaSpotify(track, this.progressMs || 0).catch(() => false);
+        if (!ok && track === this.track) {
+          this.playing = false;
+          updateStatusIcon();
+          if (this.deviceHint) push(deviceWaitView());
+        }
+      });
       return;
     }
     if (!this.audio.src) return;
@@ -370,7 +387,13 @@ async function pollSpotifyOnce() {
   if (document.hidden) return;
   let s;
   try { s = await Spot.state(); } catch (e) { return; }
-  if (!s || !s.item) return;
+  if (!s || !s.item) {
+    // 204 = Spotify has gone quiet (suspended while paused). Show paused —
+    // the toggle's recovery ladder brings it back from player.progressMs.
+    if (player.playing) { player.playing = false; updateStatusIcon(); }
+    return;
+  }
+  player.progressMs = s.progress_ms || 0;
   if (player.playing !== s.is_playing) {
     player.playing = s.is_playing;
     updateStatusIcon();
@@ -392,6 +415,11 @@ function startNpPoll() {
   pollSpotifyOnce();                 // immediate: real duration shows right away
   npPoll = setInterval(pollSpotifyOnce, 1000);
 }
+
+/* coming back to the app? re-sync the UI with Spotify right away */
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && player.mode === 'spotify') pollSpotifyOnce();
+});
 
 /* ---------------------------------------------------------------- views */
 

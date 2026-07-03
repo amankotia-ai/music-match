@@ -127,9 +127,11 @@ const Spot = (() => {
     return devices.find((x) => x.is_active) || devices[0] || null;
   }
 
-  /* play `uris` starting at index `position`; queue continues on its own */
-  async function playTracks(uris, position) {
+  /* play `uris` starting at index `position`; queue continues on its own.
+     positionMs lets a recovery resume mid-song.                          */
+  async function playTracks(uris, position, positionMs = 0) {
     const body = { uris, offset: { position } };
+    if (positionMs > 0) body.position_ms = Math.floor(positionMs);
     try {
       await api('PUT', '/me/player/play', body);
     } catch (e) {
@@ -141,7 +143,19 @@ const Spot = (() => {
   }
 
   const pause = () => api('PUT', '/me/player/pause');
-  const resume = () => api('PUT', '/me/player/play');
+
+  /* resume survives the device going "inactive" while paused (iOS suspends
+     the Spotify app within seconds) by re-targeting a known device */
+  async function resume() {
+    try {
+      await api('PUT', '/me/player/play');
+    } catch (e) {
+      if (e.status !== 404) throw e;
+      const dev = await anyDevice();
+      if (!dev) { const err = new Error('NO_DEVICE'); err.code = 'NO_DEVICE'; throw err; }
+      await api('PUT', '/me/player/play?device_id=' + encodeURIComponent(dev.id));
+    }
+  }
   const state = () => api('GET', '/me/player');       // null when nothing active
 
   return { login, logout, connected, handleRedirect, playTracks, pause, resume, state };
