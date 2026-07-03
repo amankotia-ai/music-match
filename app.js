@@ -252,14 +252,19 @@ const player = {
     try {
       await Spot.playTracks(uris, withIds.indexOf(track));
       if (track !== this.track) return true;
+      this.audio.pause();                      // preview stops the moment sync starts
       this.mode = 'spotify';
+      this.deviceHint = false;
       this.playing = true;
       updateStatusIcon();
       startNpPoll();
       renderIfNowPlaying();
       return true;
     } catch (e) {
-      if (e.code === 'NO_DEVICE') this.deviceHint = true;
+      if (e.code === 'NO_DEVICE') {
+        this.deviceHint = true;
+        watchForDevice(track);                 // auto-sync as soon as Spotify wakes
+      }
       return false;                            // fall back to the preview
     }
   },
@@ -282,18 +287,70 @@ const player = {
     this.load(this.queue, (this.index + dir + this.queue.length) % this.queue.length);
   },
 
-  openInSpotify() {
-    const t = this.track || currentHighlightedTrack();
-    if (!t) return;
-    this.audio.pause();
-    this.playing = false;
-    updateStatusIcon();
-    const url = t.spotifyId
-      ? `https://open.spotify.com/track/${t.spotifyId}`
-      : `https://open.spotify.com/search/${encodeURIComponent(`${t.title} ${t.artist}`)}`;
-    window.open(url, '_blank');
-  },
 };
+
+/* ---- guided play states -------------------------------------------------
+   The play button never deep-links away anymore. It resolves the current
+   state and either toggles playback or walks the user to the fix.        */
+
+function playPressed() {
+  if (player.mode === 'spotify' && player.track) {
+    player.toggle();                                     // synced: real play/pause
+    return;
+  }
+  if (!spotOK()) {
+    push(connectSpotifyView());                          // guide: connect first
+    return;
+  }
+  if (player.track) {
+    if (player.deviceHint) push(deviceWaitView());       // guide: wake Spotify
+    else player.playViaSpotify(player.track).then((ok) => {
+      if (!ok && player.deviceHint) push(deviceWaitView());
+    });
+    return;
+  }
+  push(nowPlayingView());                                // nothing selected yet
+}
+
+/* poll for a Spotify device and start full playback the moment one exists */
+let deviceWatch = null;
+function watchForDevice(track) {
+  clearInterval(deviceWatch);
+  let tries = 0;
+  deviceWatch = setInterval(async () => {
+    tries++;
+    if (tries > 20 || !spotOK() || player.track !== track || player.mode === 'spotify') {
+      clearInterval(deviceWatch);
+      return;
+    }
+    const played = await player.playViaSpotify(track).catch(() => false);
+    if (played && player.mode === 'spotify') {
+      clearInterval(deviceWatch);
+      if (topView() && topView().isDeviceWait) popView(); // dismiss the guide
+      renderIfNowPlaying();
+    }
+  }, 4000);
+}
+
+function connectSpotifyView() {
+  const v = stubView('Spotify', '🎧', 'Connect Spotify',
+    'Full songs play through your Spotify app.<br><br>Press the <b>centre button</b> to connect.<br>Until then you get 30s previews.');
+  v.onSelect = () => { if (typeof Spot !== 'undefined') Spot.login(); };
+  return v;
+}
+
+function deviceWaitView() {
+  const v = stubView('Spotify', '📱', 'Wake up Spotify',
+    'No active Spotify device found.<br><br>Press the <b>centre button</b> to open Spotify,<br>then come back — playback starts by itself.');
+  v.isDeviceWait = true;
+  v.onSelect = () => {
+    const ios = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (ios) location.href = 'spotify://';               // wake the app
+    else window.open('https://open.spotify.com', '_blank'); // web player = a device
+  };
+  if (player.track) watchForDevice(player.track);
+  return v;
+}
 
 player.audio.setAttribute('playsinline', '');
 
@@ -444,14 +501,6 @@ function shuffleAll() {
   push(nowPlayingView());
 }
 
-function currentHighlightedTrack() {
-  /* if the user is sitting on a song row, ⏯ should open that song */
-  const view = topView();
-  if (!view || view.type !== 'list') return null;
-  const item = view.items[cursor()];
-  return item && item.track ? item.track : null;
-}
-
 /* --------------------------------------------------------------- render */
 
 const screenContent = $('#screenContent');
@@ -555,8 +604,10 @@ function renderNowPlaying(el) {
           ${player.mode === 'spotify'
             ? '<span class="np-badge">SPOTIFY &middot; FULL TRACK</span><span class="np-hint">&#9654;&#10073;&#10073; play / pause</span>'
             : player.deviceHint
-              ? '<span class="np-badge muted">NO SPOTIFY DEVICE</span><span class="np-hint">open the Spotify app once, then reselect</span>'
-              : `<span class="np-badge ${t.previewUrl === null ? 'muted' : ''}">${t.previewUrl === null ? 'NO PREVIEW' : '30s PREVIEW'}</span><span class="np-hint">&#9654;&#10073;&#10073; opens in Spotify</span>`}
+              ? '<span class="np-badge muted">WAITING FOR SPOTIFY</span><span class="np-hint">&#9654;&#10073;&#10073; for help &middot; syncs automatically</span>'
+              : spotOK()
+                ? `<span class="np-badge ${t.previewUrl === null ? 'muted' : ''}">${t.previewUrl === null ? 'NO PREVIEW' : '30s PREVIEW'}</span><span class="np-hint">&#9654;&#10073;&#10073; to sync full track</span>`
+                : `<span class="np-badge ${t.previewUrl === null ? 'muted' : ''}">${t.previewUrl === null ? 'NO PREVIEW' : '30s PREVIEW'}</span><span class="np-hint">&#9654;&#10073;&#10073; to connect Spotify</span>`}
         </div>
       </div>
       <div class="np-progress">
@@ -667,6 +718,7 @@ function moveCursor(dir, count = 1) {
 
 function selectCurrent() {
   const view = topView();
+  if (view.onSelect) { view.onSelect(); return; }
   if (view.type === 'list') {
     const item = view.items[cursor()];
     if (item) item.action();
@@ -752,10 +804,7 @@ function pressButton(zone) {
   switch (zone) {
     case 'center': selectCurrent(); break;
     case 'menu': popView(); break;
-    case 'play':
-      if (player.mode === 'spotify' && player.track) player.toggle();
-      else player.openInSpotify();
-      break;
+    case 'play': playPressed(); break;
     case 'next':
       if (topView().type === 'nowplaying') player.step(1); else moveCursor(1);
       break;
