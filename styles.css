@@ -538,7 +538,6 @@ body {
   align-items: center;
   justify-content: center;
   background: radial-gradient(circle at 38% 30%, #dedfe1 0%, #d2d3d5 55%, #c6c7ca 100%);
-  transition: background .1s ease-out;
 }
 .mood-quad span {
   color: #82878e;
@@ -556,10 +555,6 @@ body {
 .quad-blue    span { transform: translate(-4%, 38%); font-size: 11px; }
 .quad-chill   span { transform: translate(9%, 38%); }
 
-.mood-quad.hot {
-  background: radial-gradient(circle at 38% 30%, #f2f3f5 0%, #e6e7e9 55%, #dadbde 100%);
-}
-.mood-quad.hot span { color: var(--lcd-text); }
 
 .mood-deadzone {
   position: absolute;

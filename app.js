@@ -9,54 +9,60 @@
 /* Spotify IDs and artwork URLs verified via Spotify's public oEmbed API.  */
 
 const LIBRARY = [
-  { title: 'Love Sick Doctor', artist: 'Thunder Jackson', album: 'Thunder Jackson', mood: 'hype', spotifyId: '356IPNZVio2kmkIS1VdvLi', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0259e532675eefa84e47b00025' },
-  { title: 'All In Due Time', artist: 'Snazzy', album: 'All In Due Time', mood: 'chill', spotifyId: '7x2oEbzj8lnOv5QpEGvrtR', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02c78f374b0355f6f204571ae8' },
-  { title: 'All Your\'n', artist: 'Martin Bandz', album: 'All Your\'n', mood: 'chill', spotifyId: null, art: 'https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/f8/c5/f6/f8c5f62b-999f-d243-69ee-440c5afd579d/artwork.jpg/600x600bb.jpg' },
-  { title: 'White Ferrari', artist: 'Frank Ocean', album: 'Blonde', mood: 'blue', spotifyId: '2LMkwUfqC6S6s6qDVlEuzV', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02c5649add07ed3720be9d5526' },
-  { title: 'Fool', artist: 'Bay Ledges', album: 'Rivers', mood: 'chill', spotifyId: '6tdjyoaesC0pXHA7QD8oEw', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02533c186aef4b1b2c8417b725' },
-  { title: 'Trade Places', artist: 'Jack Harlow', album: 'Monica', mood: 'hype', spotifyId: '3yBI1IVune0k7Tsmcy8BVh', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0231646844acc328f1aac59fea' },
-  { title: 'Frisky', artist: 'Dominic Fike', album: 'Sunburn', mood: 'hype', spotifyId: '3my33XXLpYUzVEeLOyftV2', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e025b26c1b56d89c1416d21db60' },
-  { title: 'Self Aware', artist: 'Temper City', album: 'Self Aware', mood: 'hype', spotifyId: '4qW3BbQAwZsrnu8a3ZRdyT', art: 'https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02d6c26d2ae723f7ab553d64cc' },
-  { title: 'Tell Me Why', artist: 'Gotts Street Park, Olive Jones', album: 'On the Inside', mood: 'blue', spotifyId: '4sX0BKWqewRYH8OArRUplH', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02b1f08baf7d77100c632dcee1' },
-  { title: 'A Different Age', artist: 'Current Joys', album: 'A Different Age', mood: 'blue', spotifyId: '5iMXCDWA4FxPNcOnq0HrpJ', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02df7a61e9fdf9fec7df7bd72a' },
-  { title: 'Float', artist: 'Olivia Dean', album: 'Growth', mood: 'chill', spotifyId: '031T6v4JIcPlkbzOrpzOnv', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02a67c5c1aa5192977c669a736' },
-  { title: 'Radio', artist: 'Martin Bandz', album: 'Radio', mood: 'chill', spotifyId: '4HExgkLGWkbiD5QDohGE4M', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02e9b45bcdea4dfbd0e1ecd308' },
-  { title: 'Woman', artist: 'Mumford & Sons', album: 'Delta', mood: 'intense', spotifyId: '47DKI4RxI8ZW0sBqDenMhO', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02c07c58c03363c8125d9eb18d' },
-  { title: 'Take Me To Church', artist: 'Bossa Nova Covers, Mats & My', album: 'Take Me To Church', mood: 'chill', spotifyId: null, art: 'https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/d0/64/79/d06479ef-8209-bb3d-2a44-988133b7672c/196874102589.jpg/600x600bb.jpg' },
-  { title: 'Earrings', artist: 'Malcolm Todd', album: 'Sweet Boy', mood: 'chill', spotifyId: '0eAuGrXyGFYwur9ARUe7LJ', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e022c1f34ecc1929fb59908aad1' },
-  { title: 'You Don\'t Know', artist: 'Lucas Home', album: 'You Don\'t Know', mood: 'intense', spotifyId: '6Zamn1OL7XnnWWcwMLLp4S', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0212f7671df38248a3d773fe99' },
-  { title: 'Know That You Know', artist: 'Patrick Watson', album: 'Love Songs for Robots', mood: 'blue', spotifyId: '6DYiTO8Y7o4SDu1zJz11lC', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e021262148686292d69ad6ceb03' },
-  { title: 'Feeling For You', artist: 'Milky Chance', album: 'Living in a Haze', mood: 'hype', spotifyId: '1BSTT3sbQ1MVVacApHilK9', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0284e9e803499a83ff405f8034' },
-  { title: 'WAR', artist: 'Kal Mackane', album: 'WAR', mood: 'intense', spotifyId: null, art: 'https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/30/49/c8/3049c80f-d996-4cf0-bf87-843f9e67e499/822299653398.png/600x600bb.jpg' },
-  { title: 'F-Stop Blues', artist: 'Jack Johnson', album: 'Brushfire Fairytales (Remastered) [Bonus Version]', mood: 'chill', spotifyId: '3EBexE2FduUQV8urHDGVZ5', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02b8ef03bd9dd5ac6e7dc112df' },
-  { title: 'Rodeo Clowns', artist: 'Jack Johnson', album: 'On and On', mood: 'chill', spotifyId: '2Z0Devr3hrO8bDUvhRIMh8', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e024a25251f8c645064ebdec45b' },
-  { title: 'Tomorrow Morning', artist: 'Jack Johnson', album: 'On and On', mood: 'chill', spotifyId: '7nSP35TXXGW3fYlICWR8cx', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02f16dd423cb90469fb43af08c' },
-  { title: 'Thinking About You', artist: 'Norah Jones', album: 'Not Too Late', mood: 'blue', spotifyId: '0Dpf33TLqUMr4Vlbx5dUw4', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02df3bee99d02e42d71d3a5a4a' },
-  { title: 'Seven Nation Army', artist: 'Laza Bossa', album: 'Seven Nation Army', mood: 'chill', spotifyId: '5nfbAsIImqdWx2PrR0ORsk', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e025e2fe8b671a9bb9d56238c45' },
-  { title: 'Set My Baby Free', artist: 'Ian Brown', album: 'Golden Greats', mood: 'hype', spotifyId: '4NQ2SSyEWA3PDOZy6Uchuu', art: 'https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02c1c8863d22e647739aa00cf3' },
-  { title: 'Darlin\'', artist: 'Jean Dawson', album: 'Glimmer of God', mood: 'blue', spotifyId: '3lFVdFLQeBXLxqKxqwqIfS', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0260cac8c2d78f2c4e45f10c37' },
-  { title: 'Lovelovelove', artist: 'Flea', album: 'Helen Burns', mood: 'chill', spotifyId: '4zT2e0Y4whBSvuKzJaChbd', art: 'https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02fbf31b88d570149278959081' },
-  { title: 'Thank You', artist: 'LEMFRECK', album: 'Thank You', mood: 'hype', spotifyId: '72nNfdADuOnTeIFPpwabIG', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02e7ed575662fb077ca397ee24' },
-  { title: 'Honey', artist: 'Andrew Kamen', album: 'Honey', mood: 'chill', spotifyId: '0QJEOYPUMlPiMbdAUngD9e', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02835ed61222ada9a8182d0d76' },
-  { title: 'Giving It In', artist: 'Faye Meana', album: 'Giving It In', mood: 'blue', spotifyId: '19aWApe8dVKOh3klNoje6y', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02560c55ee8bf3653aa6a3f609' },
-  { title: 'Red Hearts', artist: 'Marlon Funaki', album: 'Red Hearts', mood: 'blue', spotifyId: '7aU8ycwySg1LQAuCKgr3z9', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e023305de5b7821aa9570c0b73b' },
-  { title: 'The Way I Love You - Acoustic', artist: 'Jorja Smith', album: 'The Way I Love You', mood: 'blue', spotifyId: '2a1YoHUcoZeQMCDT5jIRMr', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02f71728fad7034c20bd3d893a' },
-  { title: 'Run Away', artist: 'Chezile', album: '47', mood: 'blue', spotifyId: '6doY5sLPHdE4g7RUQdYSz6', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02e9387414fb13819654912c8e' },
-  { title: 'Heart To Heart', artist: 'Mac DeMarco', album: 'Here Comes the Cowboy', mood: 'chill', spotifyId: '7EAMXbLcL0qXmciM5SwMh2', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e022866217fb30f5428cd77fde4' },
-  { title: 'Tender love', artist: 'Mounika., Ocie Elliott', album: 'I Need Space', mood: 'chill', spotifyId: '60GK9ifHXOrJXJq46lwILc', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02f64d68a9061b3bc89a918c35' },
-  { title: 'Show Me How', artist: 'Men I Trust', album: 'Show Me How', mood: 'chill', spotifyId: '75IQVo8hqI1iwVZyvkN2VT', art: 'https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02deeb617204bc14f4ee87b057' },
-  { title: 'Dirty Love', artist: 'Mt. Joy', album: 'Mt. Joy', mood: 'hype', spotifyId: '6bON0csSf7G4LDsUrBwQ54', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0231e4ef69237ca7ffbecda485' },
-  { title: 'Sea Gets Hotter', artist: 'Durand Jones & The Indications', album: 'American Love Call', mood: 'blue', spotifyId: '5ZK62nSchTamBy8F6HIZov', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e028deec279b07d5a628aca1ea3' },
-  { title: 'Daughter of the Sun', artist: 'vbnd, Katie Tupper, Justice Der', album: 'Daughter of the Sun', mood: 'chill', spotifyId: '6CXkN8hknWTqYpI5K5ljOl', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0232175dbb68c3f1864f4f34d0' },
+  { title: 'Love Sick Doctor', artist: 'Thunder Jackson', album: 'Thunder Jackson', v: 0.6, e: 0.7, spotifyId: '356IPNZVio2kmkIS1VdvLi', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0259e532675eefa84e47b00025' },
+  { title: 'All In Due Time', artist: 'Snazzy', album: 'All In Due Time', v: 0.4, e: -0.3, spotifyId: '7x2oEbzj8lnOv5QpEGvrtR', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02c78f374b0355f6f204571ae8' },
+  { title: 'All Your\'n', artist: 'Martin Bandz', album: 'All Your\'n', v: 0.5, e: -0.4, spotifyId: null, art: 'https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/f8/c5/f6/f8c5f62b-999f-d243-69ee-440c5afd579d/artwork.jpg/600x600bb.jpg' },
+  { title: 'White Ferrari', artist: 'Frank Ocean', album: 'Blonde', v: -0.7, e: -0.8, spotifyId: '2LMkwUfqC6S6s6qDVlEuzV', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02c5649add07ed3720be9d5526' },
+  { title: 'Fool', artist: 'Bay Ledges', album: 'Rivers', v: 0.6, e: 0.1, spotifyId: '6tdjyoaesC0pXHA7QD8oEw', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02533c186aef4b1b2c8417b725' },
+  { title: 'Trade Places', artist: 'Jack Harlow', album: 'Monica', v: 0.5, e: 0.5, spotifyId: '3yBI1IVune0k7Tsmcy8BVh', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0231646844acc328f1aac59fea' },
+  { title: 'Frisky', artist: 'Dominic Fike', album: 'Sunburn', v: 0.7, e: 0.6, spotifyId: '3my33XXLpYUzVEeLOyftV2', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e025b26c1b56d89c1416d21db60' },
+  { title: 'Self Aware', artist: 'Temper City', album: 'Self Aware', v: 0.2, e: 0.7, spotifyId: '4qW3BbQAwZsrnu8a3ZRdyT', art: 'https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02d6c26d2ae723f7ab553d64cc' },
+  { title: 'Tell Me Why', artist: 'Gotts Street Park, Olive Jones', album: 'On the Inside', v: -0.5, e: -0.5, spotifyId: '4sX0BKWqewRYH8OArRUplH', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02b1f08baf7d77100c632dcee1' },
+  { title: 'A Different Age', artist: 'Current Joys', album: 'A Different Age', v: -0.6, e: 0.0, spotifyId: '5iMXCDWA4FxPNcOnq0HrpJ', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02df7a61e9fdf9fec7df7bd72a' },
+  { title: 'Float', artist: 'Olivia Dean', album: 'Growth', v: 0.7, e: -0.1, spotifyId: '031T6v4JIcPlkbzOrpzOnv', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02a67c5c1aa5192977c669a736' },
+  { title: 'Radio', artist: 'Martin Bandz', album: 'Radio', v: 0.3, e: -0.2, spotifyId: '4HExgkLGWkbiD5QDohGE4M', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02e9b45bcdea4dfbd0e1ecd308' },
+  { title: 'Woman', artist: 'Mumford & Sons', album: 'Delta', v: -0.3, e: 0.6, spotifyId: '47DKI4RxI8ZW0sBqDenMhO', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02c07c58c03363c8125d9eb18d' },
+  { title: 'Take Me To Church', artist: 'Bossa Nova Covers, Mats & My', album: 'Take Me To Church', v: 0.3, e: -0.6, spotifyId: null, art: 'https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/d0/64/79/d06479ef-8209-bb3d-2a44-988133b7672c/196874102589.jpg/600x600bb.jpg' },
+  { title: 'Earrings', artist: 'Malcolm Todd', album: 'Sweet Boy', v: 0.2, e: 0.2, spotifyId: '0eAuGrXyGFYwur9ARUe7LJ', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e022c1f34ecc1929fb59908aad1' },
+  { title: 'You Don\'t Know', artist: 'Lucas Home', album: 'You Don\'t Know', v: -0.4, e: 0.5, spotifyId: '6Zamn1OL7XnnWWcwMLLp4S', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0212f7671df38248a3d773fe99' },
+  { title: 'Know That You Know', artist: 'Patrick Watson', album: 'Love Songs for Robots', v: -0.4, e: -0.7, spotifyId: '6DYiTO8Y7o4SDu1zJz11lC', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e021262148686292d69ad6ceb03' },
+  { title: 'Feeling For You', artist: 'Milky Chance', album: 'Living in a Haze', v: 0.6, e: 0.5, spotifyId: '1BSTT3sbQ1MVVacApHilK9', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0284e9e803499a83ff405f8034' },
+  { title: 'WAR', artist: 'Kal Mackane', album: 'WAR', v: -0.6, e: 0.8, spotifyId: null, art: 'https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/30/49/c8/3049c80f-d996-4cf0-bf87-843f9e67e499/822299653398.png/600x600bb.jpg' },
+  { title: 'F-Stop Blues', artist: 'Jack Johnson', album: 'Brushfire Fairytales (Remastered) [Bonus Version]', v: 0.5, e: -0.5, spotifyId: '3EBexE2FduUQV8urHDGVZ5', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02b8ef03bd9dd5ac6e7dc112df' },
+  { title: 'Rodeo Clowns', artist: 'Jack Johnson', album: 'On and On', v: 0.4, e: 0.0, spotifyId: '2Z0Devr3hrO8bDUvhRIMh8', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e024a25251f8c645064ebdec45b' },
+  { title: 'Tomorrow Morning', artist: 'Jack Johnson', album: 'On and On', v: 0.3, e: -0.6, spotifyId: '7nSP35TXXGW3fYlICWR8cx', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02f16dd423cb90469fb43af08c' },
+  { title: 'Thinking About You', artist: 'Norah Jones', album: 'Not Too Late', v: 0.1, e: -0.6, spotifyId: '0Dpf33TLqUMr4Vlbx5dUw4', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02df3bee99d02e42d71d3a5a4a' },
+  { title: 'Seven Nation Army', artist: 'Laza Bossa', album: 'Seven Nation Army', v: 0.1, e: -0.3, spotifyId: '5nfbAsIImqdWx2PrR0ORsk', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e025e2fe8b671a9bb9d56238c45' },
+  { title: 'Set My Baby Free', artist: 'Ian Brown', album: 'Golden Greats', v: 0.5, e: 0.6, spotifyId: '4NQ2SSyEWA3PDOZy6Uchuu', art: 'https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02c1c8863d22e647739aa00cf3' },
+  { title: 'Darlin\'', artist: 'Jean Dawson', album: 'Glimmer of God', v: -0.3, e: 0.2, spotifyId: '3lFVdFLQeBXLxqKxqwqIfS', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0260cac8c2d78f2c4e45f10c37' },
+  { title: 'Lovelovelove', artist: 'Flea', album: 'Helen Burns', v: 0.4, e: -0.2, spotifyId: '4zT2e0Y4whBSvuKzJaChbd', art: 'https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02fbf31b88d570149278959081' },
+  { title: 'Thank You', artist: 'LEMFRECK', album: 'Thank You', v: 0.6, e: 0.4, spotifyId: '72nNfdADuOnTeIFPpwabIG', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02e7ed575662fb077ca397ee24' },
+  { title: 'Honey', artist: 'Andrew Kamen', album: 'Honey', v: 0.5, e: -0.4, spotifyId: '0QJEOYPUMlPiMbdAUngD9e', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02835ed61222ada9a8182d0d76' },
+  { title: 'Giving It In', artist: 'Faye Meana', album: 'Giving It In', v: -0.4, e: -0.4, spotifyId: '19aWApe8dVKOh3klNoje6y', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02560c55ee8bf3653aa6a3f609' },
+  { title: 'Red Hearts', artist: 'Marlon Funaki', album: 'Red Hearts', v: -0.5, e: -0.2, spotifyId: '7aU8ycwySg1LQAuCKgr3z9', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e023305de5b7821aa9570c0b73b' },
+  { title: 'The Way I Love You - Acoustic', artist: 'Jorja Smith', album: 'The Way I Love You', v: -0.2, e: -0.7, spotifyId: '2a1YoHUcoZeQMCDT5jIRMr', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02f71728fad7034c20bd3d893a' },
+  { title: 'Run Away', artist: 'Chezile', album: '47', v: -0.6, e: -0.3, spotifyId: '6doY5sLPHdE4g7RUQdYSz6', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02e9387414fb13819654912c8e' },
+  { title: 'Heart To Heart', artist: 'Mac DeMarco', album: 'Here Comes the Cowboy', v: 0.0, e: -0.8, spotifyId: '7EAMXbLcL0qXmciM5SwMh2', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e022866217fb30f5428cd77fde4' },
+  { title: 'Tender love', artist: 'Mounika., Ocie Elliott', album: 'I Need Space', v: 0.3, e: -0.7, spotifyId: '60GK9ifHXOrJXJq46lwILc', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02f64d68a9061b3bc89a918c35' },
+  { title: 'Show Me How', artist: 'Men I Trust', album: 'Show Me How', v: 0.1, e: -0.4, spotifyId: '75IQVo8hqI1iwVZyvkN2VT', art: 'https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02deeb617204bc14f4ee87b057' },
+  { title: 'Dirty Love', artist: 'Mt. Joy', album: 'Mt. Joy', v: 0.6, e: 0.3, spotifyId: '6bON0csSf7G4LDsUrBwQ54', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0231e4ef69237ca7ffbecda485' },
+  { title: 'Sea Gets Hotter', artist: 'Durand Jones & The Indications', album: 'American Love Call', v: -0.1, e: -0.5, spotifyId: '5ZK62nSchTamBy8F6HIZov', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e028deec279b07d5a628aca1ea3' },
+  { title: 'Daughter of the Sun', artist: 'vbnd, Katie Tupper, Justice Der', album: 'Daughter of the Sun', v: 0.4, e: -0.5, spotifyId: '6CXkN8hknWTqYpI5K5ljOl', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0232175dbb68c3f1864f4f34d0' },
 ];
 
-/* mood quadrants — valence (x) by energy (y), like the circumplex model */
-const MOODS = {
-  intense: { label: 'Intense', color: '#c8483c' },
-  hype:    { label: 'Hype', color: '#ef9a2d' },
-  blue:    { label: 'Melancholy', color: '#47649f' },
-  chill:   { label: 'Chill', color: '#35a869' },
-};
+/* the mood plane — valence (x, sad to happy) by energy (y, calm to charged).
+   8 named regions: the 4 corners plus blend names on the axes.            */
+function blendAt(v, e) {
+  const ang = Math.atan2(e, v) * 180 / Math.PI;
+  if (ang >= -22.5 && ang < 22.5)   return { label: 'Golden',      color: '#e0a83c' };
+  if (ang >= 22.5 && ang < 67.5)    return { label: 'Hype',        color: '#ef9a2d' };
+  if (ang >= 67.5 && ang < 112.5)   return { label: 'Charged',     color: '#d97435' };
+  if (ang >= 112.5 && ang < 157.5)  return { label: 'Intense',     color: '#c8483c' };
+  if (ang >= 157.5 || ang < -157.5) return { label: 'Heavy Heart', color: '#7a5670' };
+  if (ang >= -157.5 && ang < -112.5) return { label: 'Melancholy', color: '#47649f' };
+  if (ang >= -112.5 && ang < -67.5) return { label: 'Late Night',  color: '#3f7a8c' };
+  return { label: 'Chill', color: '#35a869' };
+}
 
 /* -------------------------------------------------------------- utilities */
 
@@ -825,7 +831,7 @@ const HOLD_MS = 1200;
 const moodState = {
   active: false,
   dragging: false,
-  hovered: null,
+  blend: null,
   holdTimer: null,
   moved: 0,
   tapCancels: false,
@@ -841,28 +847,31 @@ function setPuck(dx, dy, animate = true) {
   puck.style.transform = `translate(${dx}px, ${dy}px)`;
 }
 
-function setHoverQuad(key) {
-  if (key === moodState.hovered) return;
-  moodState.hovered = key;
-  picker.querySelectorAll('.mood-quad').forEach((q) =>
-    q.classList.toggle('hot', q.dataset.mood === key));
-  if (key) {
-    moodHintText.textContent = MOODS[key].label;
-    moodHintDot.style.setProperty('background', MOODS[key].color);
-    tick();
-    buzz(8);
-  } else {
+/* v/e are -1..1 plane coordinates; null clears the selection */
+function setBlend(v, e) {
+  if (v === null) {
+    moodState.blend = null;
     moodHintText.textContent = 'How are you feeling?';
     moodHintDot.style.setProperty('background', '#9aa1aa');
+    return;
+  }
+  const region = blendAt(v, e);
+  const changed = !moodState.blend || moodState.blend.label !== region.label;
+  moodState.blend = { v, e, label: region.label };
+  if (changed) {
+    moodHintText.textContent = region.label;
+    moodHintDot.style.setProperty('background', region.color);
+    tick();
+    buzz(8);
   }
 }
 
 function enterMoodMode() {
   moodState.active = true;
-  moodState.hovered = undefined;   // force setHoverQuad(null) to apply
+  moodState.blend = null;
   moodState.moved = 0;
   setPuck(0, 0, false);
-  setHoverQuad(null);
+  setBlend(null);
   device.classList.add('mood-mode');
   tick();
   buzz(18);
@@ -878,12 +887,15 @@ function exitMoodMode() {
   setTimeout(() => { moodState.suppressClick = false; }, 80);
 }
 
-function commitMood(key) {
-  const tracks = LIBRARY.filter((t) => t.mood === key);
+function commitBlend() {
+  const b = moodState.blend;
   exitMoodMode();
+  if (!b) return;
   tick();
   buzz(20);
-  if (tracks.length) push(coverFlowView(tracks, MOODS[key].label));
+  const dist = (t) => Math.hypot((t.v || 0) - b.v, (t.e || 0) - b.e);
+  const ranked = [...LIBRARY].sort((a, c) => dist(a) - dist(c)).slice(0, 12);
+  push(coverFlowView(ranked, b.label));
 }
 
 function movePuckToPointer(e) {
@@ -896,10 +908,10 @@ function movePuckToPointer(e) {
   const maxLen = R * 0.60;
   if (len > maxLen) { dx *= maxLen / len; dy *= maxLen / len; }
   setPuck(dx, dy, false);
-  if (len > R * 0.24) {
-    setHoverQuad(`${dy < 0 ? (dx < 0 ? 'intense' : 'hype') : (dx < 0 ? 'blue' : 'chill')}`);
+  if (len > R * 0.20) {
+    setBlend(dx / maxLen, -dy / maxLen);   // screen-down = low energy
   } else {
-    setHoverQuad(null);
+    setBlend(null);
   }
 }
 
@@ -920,7 +932,7 @@ document.addEventListener('pointermove', (e) => {
 document.addEventListener('pointerup', () => {
   if (!moodState.active || !moodState.dragging) return;
   moodState.dragging = false;
-  if (moodState.hovered) { commitMood(moodState.hovered); return; }
+  if (moodState.blend) { commitBlend(); return; }
   if (moodState.moved > 24 || (moodState.tapCancels && moodState.moved < 10)) {
     exitMoodMode();                 // dropped back in the centre, or tapped it
     return;
@@ -970,15 +982,15 @@ document.addEventListener('keydown', (e) => {
       const r = picker.getBoundingClientRect();
       const off = r.width * 0.26;   // keep the puck inside the circular clip
       setPuck(kb.x * off, kb.y * off, true);
-      if (kb.x && kb.y) setHoverQuad(kb.y < 0 ? (kb.x < 0 ? 'intense' : 'hype') : (kb.x < 0 ? 'blue' : 'chill'));
-      else setHoverQuad(null);
+      if (kb.x || kb.y) setBlend(kb.x, -kb.y);
+      else setBlend(null);
     };
     const moodKeys = {
       ArrowUp: () => { kb.y = -1; aim(); },
       ArrowDown: () => { kb.y = 1; aim(); },
       ArrowLeft: () => { kb.x = -1; aim(); },
       ArrowRight: () => { kb.x = 1; aim(); },
-      Enter: () => { if (moodState.hovered) commitMood(moodState.hovered); },
+      Enter: () => { if (moodState.blend) commitBlend(); },
       Escape: () => exitMoodMode(),
       Backspace: () => exitMoodMode(),
     };
