@@ -476,10 +476,9 @@ function mainMenuView() {
 
 function musicMenuView() {
   return listView('Music', [
-    { label: 'Cover Flow', action: () => push(coverFlowView()) },
+    { label: 'All Songs', action: () => push(coverFlowView(LIBRARY, 'All Songs')) },
     { label: 'Artists', action: () => push(artistsView()) },
     { label: 'Albums', action: () => push(albumsView()) },
-    { label: 'Songs', action: () => push(listView('Songs', makeSongItems(LIBRARY))) },
   ]);
 }
 
