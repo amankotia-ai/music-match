@@ -203,11 +203,15 @@ function unlockAudio() {
 
 /* ------------------------------------------------------------ player state */
 
+const spotOK = () => typeof Spot !== 'undefined' && Spot.connected();
+
 const player = {
   audio: new Audio(),
   queue: [],
   index: -1,
   playing: false,
+  mode: 'preview',            // 'preview' (30s clip) | 'spotify' (full track on device)
+  deviceHint: false,          // connected but no active Spotify device found
 
   get track() { return this.queue[this.index] || null; },
 
@@ -216,9 +220,19 @@ const player = {
     this.index = index;
     this.audio.pause();
     this.playing = false;
+    this.mode = 'preview';
+    this.deviceHint = false;
     updateStatusIcon();
     const track = this.track;
     if (!track) return;
+
+    // full-track playback through the user's Spotify device
+    if (autoplay && spotOK() && track.spotifyId) {
+      const played = await this.playViaSpotify(track);
+      if (played || track !== this.track) return;
+    }
+
+    // 30-second preview fallback
     const url = await fetchPreview(track);
     if (track !== this.track) return;          // user skipped meanwhile
     track.previewUrl = url;
@@ -232,7 +246,31 @@ const player = {
     renderIfNowPlaying();
   },
 
+  async playViaSpotify(track) {
+    const withIds = this.queue.filter((t) => t.spotifyId);
+    const uris = withIds.map((t) => 'spotify:track:' + t.spotifyId);
+    try {
+      await Spot.playTracks(uris, withIds.indexOf(track));
+      if (track !== this.track) return true;
+      this.mode = 'spotify';
+      this.playing = true;
+      updateStatusIcon();
+      startNpPoll();
+      renderIfNowPlaying();
+      return true;
+    } catch (e) {
+      if (e.code === 'NO_DEVICE') this.deviceHint = true;
+      return false;                            // fall back to the preview
+    }
+  },
+
   toggle() {
+    if (this.mode === 'spotify') {
+      (this.playing ? Spot.pause() : Spot.resume()).catch(() => {});
+      this.playing = !this.playing;
+      updateStatusIcon();
+      return;
+    }
     if (!this.audio.src) return;
     if (this.audio.paused) { this.audio.play().catch(() => {}); this.playing = true; }
     else { this.audio.pause(); this.playing = false; }
@@ -267,7 +305,36 @@ player.audio.addEventListener('timeupdate', () => {
   if (el) el.textContent = fmtTime(player.audio.currentTime);
   if (rm) rm.textContent = `-${fmtTime(player.audio.duration - player.audio.currentTime)}`;
 });
-player.audio.addEventListener('ended', () => player.step(1));
+player.audio.addEventListener('ended', () => { if (player.mode !== 'spotify') player.step(1); });
+
+/* poll the Spotify player while in remote mode: real progress, play state,
+   and auto-advance detection (Spotify moves through the queue on its own) */
+let npPoll = null;
+function startNpPoll() {
+  clearInterval(npPoll);
+  npPoll = setInterval(async () => {
+    if (player.mode !== 'spotify') { clearInterval(npPoll); return; }
+    if (document.hidden) return;
+    let s;
+    try { s = await Spot.state(); } catch (e) { return; }
+    if (!s || !s.item) return;
+    if (player.playing !== s.is_playing) {
+      player.playing = s.is_playing;
+      updateStatusIcon();
+    }
+    if (player.track && player.track.spotifyId !== s.item.id) {
+      const i = player.queue.findIndex((t) => t.spotifyId === s.item.id);
+      if (i >= 0) { player.index = i; renderIfNowPlaying(); }
+    }
+    const fill = $('#npBarFill');
+    if (fill && s.item.duration_ms) {
+      fill.style.width = `${(s.progress_ms / s.item.duration_ms) * 100}%`;
+      const el = $('#npElapsed'), rm = $('#npRemain');
+      if (el) el.textContent = fmtTime(s.progress_ms / 1000);
+      if (rm) rm.textContent = `-${fmtTime((s.item.duration_ms - s.progress_ms) / 1000)}`;
+    }
+  }, 1000);
+}
 
 /* ---------------------------------------------------------------- views */
 
@@ -316,7 +383,7 @@ function mainMenuView() {
     { label: 'Photos', action: () => push(stubView('Photos', '🖼️', 'No Photos', 'Imagine your 2008 camera roll here.')) },
     { label: 'Podcasts', action: () => push(stubView('Podcasts', '🎙️', 'No Podcasts', 'Serial wasn’t even out yet.')) },
     { label: 'Extras', action: () => push(stubView('Extras', '🧱', 'Extras', 'Solitaire, Vortex and Brick<br>are on a coffee break.')) },
-    { label: 'Settings', action: () => push(aboutView()) },
+    { label: 'Settings', action: () => push(settingsView()) },
     { label: 'Shuffle Songs', action: shuffleAll },
     { label: 'Now Playing', action: () => { if (player.track) push(nowPlayingView()); } },
   ], { split: true });
@@ -347,8 +414,27 @@ function albumsView() {
   })));
 }
 
+function settingsView() {
+  return listView('Settings', [
+    {
+      label: spotOK() ? 'Disconnect Spotify' : 'Connect Spotify',
+      action: () => {
+        if (typeof Spot === 'undefined') return;
+        if (Spot.connected()) {
+          Spot.logout();
+          viewStack.pop();
+          push(settingsView());     // re-render with the new label
+        } else {
+          Spot.login();             // redirects to Spotify's consent page
+        }
+      },
+    },
+    { label: 'About', action: () => push(aboutView()) },
+  ]);
+}
+
 function aboutView() {
-  return stubView('Settings', '⚙️', 'MusicMatch',
+  return stubView('About', '⚙️', 'AA music',
     `${LIBRARY.length} songs · previews via iTunes<br>full songs open in Spotify<br><br>Songs ${LIBRARY.length} &nbsp; Capacity 160GB (lol)`);
 }
 
@@ -466,10 +552,11 @@ function renderNowPlaying(el) {
           <div class="np-title">${t.title}</div>
           <div class="np-artist">${t.artist}</div>
           <div class="np-album">${t.album}</div>
-          <span class="np-badge ${t.previewUrl === null ? 'muted' : ''}">
-            ${t.previewUrl === null ? 'NO PREVIEW' : '30s PREVIEW'}
-          </span>
-          <span class="np-hint">&#9654;&#10073;&#10073; opens in Spotify</span>
+          ${player.mode === 'spotify'
+            ? '<span class="np-badge">SPOTIFY &middot; FULL TRACK</span><span class="np-hint">&#9654;&#10073;&#10073; play / pause</span>'
+            : player.deviceHint
+              ? '<span class="np-badge muted">NO SPOTIFY DEVICE</span><span class="np-hint">open the Spotify app once, then reselect</span>'
+              : `<span class="np-badge ${t.previewUrl === null ? 'muted' : ''}">${t.previewUrl === null ? 'NO PREVIEW' : '30s PREVIEW'}</span><span class="np-hint">&#9654;&#10073;&#10073; opens in Spotify</span>`}
         </div>
       </div>
       <div class="np-progress">
@@ -665,7 +752,10 @@ function pressButton(zone) {
   switch (zone) {
     case 'center': selectCurrent(); break;
     case 'menu': popView(); break;
-    case 'play': player.openInSpotify(); break;
+    case 'play':
+      if (player.mode === 'spotify' && player.track) player.toggle();
+      else player.openInSpotify();
+      break;
     case 'next':
       if (topView().type === 'nowplaying') player.step(1); else moveCursor(1);
       break;
@@ -870,3 +960,15 @@ document.addEventListener('keydown', (e) => {
 
 push(mainMenuView());
 push(coverFlowView());   // Cover Flow is the home screen; MENU backs into the menu
+
+/* returning from the Spotify consent page? finish the token exchange */
+if (typeof Spot !== 'undefined') {
+  Spot.handleRedirect().then((wasRedirect) => {
+    if (!wasRedirect) return;
+    push(stubView('Spotify', Spot.connected() ? '✅' : '⚠️',
+      Spot.connected() ? 'Spotify Connected' : 'Connection Failed',
+      Spot.connected()
+        ? 'Full songs now play through your<br>Spotify app. Pick a track!'
+        : 'Try again from Settings &rsaquo; Connect Spotify.'));
+  }).catch(() => {});
+}

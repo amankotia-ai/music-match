@@ -7,8 +7,8 @@ An iPod Classic emulator for the web. The phone screen becomes the iPod: spin th
 - **Click wheel** — circular drag scrolling with acceleration, clicker ticks, MENU/skip/play zones, center-button select
 - **Cover Flow** — 3D flowing album art, the default home screen
 - **Mood quadrant** — hold the center button for 1.2s and the wheel becomes a four-mood picker (Intense / Hype / Melancholy / Chill); drop the puck on a mood to get a Cover Flow of songs tagged with it
-- **Spotify handoff** — ⏯ deep-links the current song into the Spotify app (verified track IDs)
-- **Previews** — 30-second clips fetched from the iTunes Search API (no auth, JSONP)
+- **Spotify Connect** — Settings ▸ Connect Spotify (Premium required): songs then play full-length through your Spotify app, with the click wheel as the remote — real progress bar, play/pause on ⏯, queue continues on its own. Auth is Authorization Code + PKCE, fully client-side.
+- **Fallbacks** — not connected? 30-second iTunes previews plus ⏯ deep-linking into Spotify, as before
 
 ## Run it
 
