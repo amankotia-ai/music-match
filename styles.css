@@ -288,10 +288,9 @@ body {
 }
 
 .np-body {
-  flex: 1;
   display: flex;
   gap: 12px;
-  min-height: 0;
+  align-items: stretch;      /* meta column matches the artwork's height */
 }
 
 .np-art {
@@ -324,7 +323,7 @@ body {
   text-overflow: ellipsis;
 }
 .np-state {
-  margin-top: 8px;
+  margin-top: auto;          /* sits on the artwork's bottom edge */
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -345,7 +344,7 @@ body {
 }
 @keyframes dotPulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
 
-.np-progress { margin-top: 5px; }
+.np-progress { margin-top: auto; padding-top: 5px; }
 
 .np-bar {
   position: relative;
