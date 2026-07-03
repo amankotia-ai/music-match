@@ -9,17 +9,6 @@
 /* Spotify IDs and artwork URLs verified via Spotify's public oEmbed API.  */
 
 const LIBRARY = [
-  { title: 'Mr. Brightside', artist: 'The Killers', album: 'Hot Fuss', mood: 'intense', spotifyId: '3n3Ppam7vgaVa1iaRUc9Lp', art: 'https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02ccdddd46119a4ff53eaf1f5d' },
-  { title: 'Viva La Vida', artist: 'Coldplay', album: 'Viva la Vida or Death and All His Friends', mood: 'blue', spotifyId: '1mea3bSkSGXuIRvnydlB5b', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e027749ecd2742e95db24897759' },
-  { title: 'Kids', artist: 'MGMT', album: 'Oracular Spectacular', mood: 'hype', spotifyId: '1jJci4qxiYcOHhQR247rEU', art: 'https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02abdf7749aeb5229dbf305f03' },
-  { title: 'Electric Feel', artist: 'MGMT', album: 'Oracular Spectacular', mood: 'chill', spotifyId: '3FtYbEfBqAlGO46NUDQSAt', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02abdf7749aeb5229dbf305f03' },
-  { title: 'Heartless', artist: 'Kanye West', album: '808s & Heartbreak', mood: 'blue', spotifyId: '4EWCNWgDS8707fNSZ1oaA5', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0265fbf56c2837be4879b5020a' },
-  { title: 'Umbrella', artist: 'Rihanna', album: 'Good Girl Gone Bad', mood: 'chill', spotifyId: '49FYlytm3dAAraYgpoJZux', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02f9f27162ab1ed45b8d7a7e98' },
-  { title: '505', artist: 'Arctic Monkeys', album: 'Favourite Worst Nightmare', mood: 'blue', spotifyId: '0BxE4FqsDD1Ot4YuBXwAPp', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e020c8ac83035e9588e8ad34b90' },
-  { title: 'Harder, Better, Faster, Stronger', artist: 'Daft Punk', album: 'Discovery', mood: 'hype', spotifyId: '5W3cjX2J3tjhG8zb6u0qHn', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e021e81bff9807a9e629fce5ade' },
-  { title: 'Seven Nation Army', artist: 'The White Stripes', album: 'Elephant', mood: 'intense', spotifyId: '3dPQuX8Gs42Y7b454ybpMR', art: 'https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e027028981d09d2e5833c9c78ad' },
-  { title: 'Feel Good Inc.', artist: 'Gorillaz', album: 'Demon Days', mood: 'chill', spotifyId: '0d28khcov6AiegSCpG5TuT', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02e64af6953d2f6c2843c87e09' },
-  { title: 'Hey Ya!', artist: 'Outkast', album: 'Speakerboxxx/The Love Below', mood: 'hype', spotifyId: '2PpruBYCo4H7WOBJ7Q2EwM', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e026e88eb6508fd94cd1b745ce2' },
   { title: 'Love Sick Doctor', artist: 'Thunder Jackson', album: 'Thunder Jackson', mood: 'hype', spotifyId: '356IPNZVio2kmkIS1VdvLi', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0259e532675eefa84e47b00025' },
   { title: 'All In Due Time', artist: 'Snazzy', album: 'All In Due Time', mood: 'chill', spotifyId: '7x2oEbzj8lnOv5QpEGvrtR', art: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02c78f374b0355f6f204571ae8' },
   { title: 'All Your\'n', artist: 'Martin Bandz', album: 'All Your\'n', mood: 'chill', spotifyId: null, art: 'https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/f8/c5/f6/f8c5f62b-999f-d243-69ee-440c5afd579d/artwork.jpg/600x600bb.jpg' },
@@ -434,7 +423,7 @@ function coverFlowView(tracks = LIBRARY, title = 'AA music') {
 }
 
 function mainMenuView() {
-  return listView('iPod', [
+  return listView("Aditi's iPod", [
     { label: 'Music', action: () => push(musicMenuView()) },
     { label: 'Videos', action: () => push(stubView('Videos', '🎬', 'No Videos', 'This iPod only does one thing —<br>and it does it well.')) },
     { label: 'Photos', action: () => push(stubView('Photos', '🖼️', 'No Photos', 'Imagine your 2008 camera roll here.')) },
@@ -1004,6 +993,56 @@ document.addEventListener('keydown', (e) => {
   };
   if (keys[e.key]) { e.preventDefault(); keys[e.key](); }
 });
+
+/* ------------------------------------------------------------ idle clock */
+
+const clockEl = $('#idleClock');
+const IDLE_MS = 60000;
+let idleTimer = null;
+let clockTicker = null;
+
+function drawClock() {
+  const now = new Date();
+  const h = now.getHours() % 12, m = now.getMinutes(), s = now.getSeconds();
+  $('#clockHour').style.transform = `rotate(${h * 30 + m / 2}deg)`;
+  $('#clockMin').style.transform = `rotate(${m * 6 + s / 10}deg)`;
+  $('#clockSec').style.transform = `rotate(${s * 6}deg)`;
+  $('#clockDate').textContent = now.toLocaleDateString(undefined,
+    { weekday: 'long', month: 'short', day: 'numeric' });
+  const t = player.track;
+  $('#clockTrack').textContent = player.playing && t ? `♪ ${t.title} — ${t.artist}` : '';
+}
+
+function showClock() {
+  if (moodState.active) { resetIdle(); return; }
+  drawClock();
+  clockEl.classList.add('show');
+  clockTicker = setInterval(drawClock, 1000);
+}
+
+function hideClock() {
+  clockEl.classList.remove('show');
+  clearInterval(clockTicker);
+}
+
+function resetIdle() {
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(showClock, IDLE_MS);
+}
+
+/* the first touch only wakes the screen — it never triggers an action */
+['pointerdown', 'keydown', 'wheel'].forEach((evt) =>
+  document.addEventListener(evt, (e) => {
+    if (clockEl.classList.contains('show')) {
+      e.stopPropagation();
+      if (e.cancelable) e.preventDefault();
+      hideClock();
+    }
+    resetIdle();
+  }, { capture: true })
+);
+
+resetIdle();
 
 /* ------------------------------------------------------------------ boot */
 
