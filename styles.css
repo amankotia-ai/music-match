@@ -323,24 +323,27 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.np-badge {
-  margin-top: 7px;
-  align-self: flex-start;
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: .08em;
-  color: #fff;
-  background: linear-gradient(180deg, #23c05a, #14913e);
-  border-radius: 8px;
-  padding: 2.5px 9px 2px;
-}
-.np-badge.muted { background: linear-gradient(180deg, #a7adb5, #82888f); }
-
-.np-hint {
-  margin-top: 4px;
+.np-state {
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   font-size: 10.5px;
   color: var(--lcd-dim);
 }
+.np-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #b3b9c0;
+  flex-shrink: 0;
+}
+.np-dot.on { background: #23c05a; }
+.np-dot.wait {
+  background: #e8a13c;
+  animation: dotPulse 1.2s ease-in-out infinite;
+}
+@keyframes dotPulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
 
 .np-progress { margin-top: 5px; }
 

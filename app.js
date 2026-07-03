@@ -591,12 +591,10 @@ function renderNowPlaying(el) {
           <div class="np-artist">${t.artist}</div>
           <div class="np-album">${t.album}</div>
           ${player.mode === 'spotify'
-            ? '<span class="np-badge">SPOTIFY &middot; FULL TRACK</span><span class="np-hint">&#9654;&#10073;&#10073; play / pause</span>'
+            ? '<span class="np-state"><i class="np-dot on"></i>Spotify</span>'
             : player.deviceHint
-              ? '<span class="np-badge muted">WAITING FOR SPOTIFY</span><span class="np-hint">&#9654;&#10073;&#10073; for help &middot; syncs automatically</span>'
-              : spotOK()
-                ? `<span class="np-badge ${t.previewUrl === null ? 'muted' : ''}">${t.previewUrl === null ? 'NO PREVIEW' : '30s PREVIEW'}</span><span class="np-hint">&#9654;&#10073;&#10073; to sync full track</span>`
-                : `<span class="np-badge ${t.previewUrl === null ? 'muted' : ''}">${t.previewUrl === null ? 'NO PREVIEW' : '30s PREVIEW'}</span><span class="np-hint">&#9654;&#10073;&#10073; to connect Spotify</span>`}
+              ? '<span class="np-state"><i class="np-dot wait"></i>waiting for Spotify&hellip;</span>'
+              : `<span class="np-state"><i class="np-dot"></i>preview &middot; &#9654;&#10073;&#10073; ${spotOK() ? 'full track' : 'connect Spotify'}</span>`}
         </div>
       </div>
       <div class="np-progress">
