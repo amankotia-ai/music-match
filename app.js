@@ -279,6 +279,7 @@ const player = {
       // resume, with a recovery ladder for suspended devices / lost context
       this.playing = true;
       updateStatusIcon();
+      scheduleNpPoll(1200);          // snap back to the fast cadence
       const track = this.track;
       Spot.resume().catch(async () => {
         const ok = await this.playViaSpotify(track, this.progressMs || 0).catch(() => false);
@@ -381,9 +382,9 @@ player.audio.addEventListener('ended', () => { if (player.mode !== 'spotify') pl
 
 /* poll the Spotify player while in remote mode: real progress, play state,
    and auto-advance detection (Spotify moves through the queue on its own) */
-let npPoll = null;
+let npPollTimer = null;
 async function pollSpotifyOnce() {
-  if (player.mode !== 'spotify') { clearInterval(npPoll); return; }
+  if (player.mode !== 'spotify') return;       // the scheduler chain stops itself
   if (document.hidden) return;
   let s;
   try { s = await Spot.state(); } catch (e) { return; }
@@ -410,10 +411,18 @@ async function pollSpotifyOnce() {
     if (rm) rm.textContent = `-${fmtTime((s.item.duration_ms - s.progress_ms) / 1000)}`;
   }
 }
+/* adaptive cadence: 1s while playing, 5s while paused — kinder to battery */
+function scheduleNpPoll(delay) {
+  clearTimeout(npPollTimer);
+  npPollTimer = setTimeout(async () => {
+    await pollSpotifyOnce();
+    if (player.mode === 'spotify') scheduleNpPoll(player.playing ? 1000 : 5000);
+  }, delay);
+}
+
 function startNpPoll() {
-  clearInterval(npPoll);
   pollSpotifyOnce();                 // immediate: real duration shows right away
-  npPoll = setInterval(pollSpotifyOnce, 1000);
+  scheduleNpPoll(1000);
 }
 
 /* ---- returning to the app: adopt whatever Spotify is doing -------------
